@@ -36,24 +36,6 @@ public class LogController {
 		return new ResponseEntity<>(HttpStatus.CREATED);
 	}
 
-	/*
-	 * @PostMapping("/logGanado") public ResponseEntity<LogGanado>
-	 * crearLogGanado(@RequestBody LogGanado log) {
-	 * 
-	 * // Logica para grabar el log debe ir acá
-	 * 
-	 * // 2. Validación defensiva antes de extraer coordenadas double latitud = 0.0;
-	 * double longitud = 0.0; if (log.getCoordenadas() != null &&
-	 * log.getCoordenadas().size() >= 2) { latitud = log.getCoordenadas().get(0);
-	 * longitud = log.getCoordenadas().get(1); }
-	 * 
-	 * logger.info("El endpoint /api/logGanado ha sido invocado");
-	 * logger.info("Se recibieron los siguientes datos:"); logger.info("	ID: " +
-	 * log.getId()); logger.info("	Temperatura: " + log.getTemperatura() + "°C");
-	 * logger.info("	Coordenadas: " + latitud + ", " + longitud);
-	 * 
-	 * return new ResponseEntity<>(HttpStatus.CREATED); }
-	 */
 	@Autowired
 	private LogGanadoService logGanadoService;
 

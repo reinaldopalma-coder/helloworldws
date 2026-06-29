@@ -24,11 +24,11 @@ public class LogGanadoService {
         }
 
         LogGanadoEntity entidad = new LogGanadoEntity(
-            log.getId(),
-            log.getTemperatura(),
-            latitud,
-            longitud
-        );
+        	    log.getDispositivoId(), // Pasamos el ID del dispositivo mapeado
+        	    log.getTemperatura(),
+        	    latitud,
+        	    longitud
+        	);
 
         return logGanadoRepository.save(entidad);
     }
