@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Monitoreo - Ganado</title>
+    <!-- CSS de Leaflet para los mapas -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100vw; }
+        .info-panel {
+            position: absolute; top: 10px; left: 50px; z-index: 1000;
+            background: white; padding: 10px; border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="info-panel">
+        <h3>Monitoreo de Dispositivos</h3>
+        <p>Cargando posiciones en tiempo real...</p>
+    </div>
+
+    <div id="map"></div>
+
+    <!-- JS de Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. Inicializar el mapa centrado en una posición base (ej. Chile/Latinoamérica)
+        // Puedes cambiar [-38.74, -72.62] por las coordenadas de tu zona
+        const map = L.map('map').setView([-38.749181, -72.629824667], 12);
+
+        // 2. Cargar la capa de diseño del mapa desde OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        // 3. Consultar tu API de Spring Boot para traer los datos de MySQL
+        fetch('/api/logGanadoGet')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(log => {
+                    // Crear un pin/marcador para cada registro en la base de datos
+                    const marker = L.marker([log.latitud, log.longitud]).addTo(map);
+                    
+                    // Configurar el globo informativo flotante (Popup)
+                    marker.bindPopup(`
+                        <b>Dispositivo ID:</b> ${log.dispositivoId}<br>
+                        <b>Temperatura:</b> ${log.temperatura} °C<br>
+                        <b>Fecha:</b> ${new Date(log.fechaCreacion).toLocaleString()}
+                    `);
+                });
+                document.querySelector('.info-panel p').innerText = `Mostrando ${data.length} registros históricos.`;
+            })
+            .catch(error => {
+                console.error("Error cargando los puntos:", error);
+                document.querySelector('.info-panel p').innerText = "Error al conectar con la API.";
+            });
+    </script>
+</body>
+</html>
