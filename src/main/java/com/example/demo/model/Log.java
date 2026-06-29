@@ -3,6 +3,8 @@ package com.example.demo.model;
 public class Log {
 	private Integer id;
 	private String date;
+	private String geo;
+	private Long temperature;
 	
 	// Default constructor is required for JSON deserialization
 	public Log() {
