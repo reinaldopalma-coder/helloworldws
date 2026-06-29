@@ -1,16 +1,19 @@
 package com.example.demo.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.model.Log;
@@ -25,7 +28,7 @@ import jakarta.validation.Valid;
 public class LogController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LogController.class);
-	
+
 	@Autowired
 	private LogGanadoService logGanadoService;
 
@@ -52,9 +55,20 @@ public class LogController {
 		return new ResponseEntity<>(resultado, HttpStatus.CREATED);
 	}
 
-	@GetMapping("/logGanadoGet")
-	public ResponseEntity<List<LogGanadoEntity>> listarLogs() {
-		List<LogGanadoEntity> historial = logGanadoService.obtenerTodosLosLogs();
+	@GetMapping("/logGanado")
+	public ResponseEntity<List<LogGanadoEntity>> listarLogs(
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime desde,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime hasta) {
+
+		List<LogGanadoEntity> historial;
+
+		// Si vienen ambas fechas, filtramos. Si no, traemos todo.
+		if (desde != null && hasta != null) {
+			historial = logGanadoService.obtenerLogsPorRango(desde, hasta);
+		} else {
+			historial = logGanadoService.obtenerTodosLosLogs();
+		}
+
 		return ResponseEntity.ok(historial);
 	}
 

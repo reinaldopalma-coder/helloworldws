@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +35,10 @@ public class LogGanadoService {
 
 	public List<LogGanadoEntity> obtenerTodosLosLogs() {
 		return logGanadoRepository.findAll();
+	}
+
+	// Nuevo método para filtrar por fechas
+	public List<LogGanadoEntity> obtenerLogsPorRango(LocalDateTime inicio, LocalDateTime fin) {
+		return logGanadoRepository.findByFechaCreacionBetween(inicio, fin);
 	}
 }
