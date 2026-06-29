@@ -7,48 +7,50 @@
 <link rel="stylesheet"
 	href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-/* Estructura Base de la Pantalla */
+/* Estructura Base de la Pantalla - Modo Oscuro */
 body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Segoe UI', Arial, sans-serif;
-	background-color: #f4f6f9;
+	background-color: #0f172a;
 	display: flex;
 	height: 100vh;
 	overflow: hidden;
+	color: #f1f5f9;
 }
 
-/* 1. Panel Lateral Izquierdo (Controles e Información) */
+/* 1. Panel Lateral Izquierdo Nocturno */
 .sidebar {
 	width: 320px;
-	background: white;
-	box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+	background: #1e293b;
+	box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
 	display: flex;
 	flex-direction: column;
 	padding: 20px;
 	box-sizing: border-box;
-	border-right: 1px solid #e1e4e8;
+	border-right: 1px solid #334155;
 }
 
 .sidebar h2 {
 	margin: 0 0 15px 0;
 	font-size: 18px;
-	color: #1e293b;
+	color: #f8fafc;
 }
 
 .status-box {
-	background: #e0f2fe;
-	color: #0369a1;
+	background: #1e3a8a;
+	color: #93c5fd;
 	padding: 10px 15px;
 	border-radius: 6px;
 	font-size: 13px;
 	font-weight: 500;
 	margin-bottom: 20px;
+	border: 1px solid #2563eb;
 }
 
 .device-section h3 {
 	font-size: 14px;
-	color: #64748b;
+	color: #94a3b8;
 	margin-bottom: 10px;
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
@@ -61,16 +63,16 @@ body {
 }
 
 #deviceList li {
-	background: #f8fafc;
+	background: #0f172a;
 	padding: 10px 12px;
 	border-radius: 6px;
 	margin-bottom: 8px;
-	border: 1px solid #edf2f7;
+	border: 1px solid #334155;
 	font-size: 13px;
-	color: #334155;
+	color: #e2e8f0;
 }
 
-/* 2. Contenedor de la Derecha (Mapa y Línea de Tiempo) */
+/* 2. Contenedor de la Derecha */
 .main-content {
 	flex: 1;
 	display: flex;
@@ -83,26 +85,27 @@ body {
 /* Recuadro Central del Mapa */
 .map-wrapper {
 	flex: 1;
-	background: white;
+	background: #1e293b;
 	border-radius: 12px;
 	overflow: hidden;
-	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px
-		rgba(0, 0, 0, 0.03);
-	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+	border: 1px solid #334155;
 }
 
+/* 🎨 TRUCO CSS: Convierte el mapa de OpenStreetMap a Modo Oscuro */
 #map {
 	height: 100%;
 	width: 100%;
+	filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
 
-/* Contenedor Externo Inferior para la Línea de Tiempo */
+/* Contenedor Externo Inferior para la Línea de Tiempo Nocturna */
 .timeline-box {
-	background: white;
+	background: #1e293b;
 	padding: 15px 20px;
 	border-radius: 12px;
-	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-	border: 1px solid #e2e8f0;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+	border: 1px solid #334155;
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
@@ -113,7 +116,7 @@ body {
 	justify-content: space-between;
 	font-size: 13px;
 	font-weight: 600;
-	color: #1e293b;
+	color: #f8fafc;
 }
 
 .slider {
@@ -121,7 +124,7 @@ body {
 	width: 100%;
 	height: 6px;
 	border-radius: 3px;
-	background: #cbd5e1;
+	background: #475569;
 	outline: none;
 	cursor: pointer;
 }
@@ -132,19 +135,34 @@ body {
 	width: 16px;
 	height: 16px;
 	border-radius: 50%;
-	background: #2563eb;
+	background: #38bdf8;
 	cursor: pointer;
 }
 
 .slider::-webkit-slider-thumb:hover {
-	background: #1d4ed8;
+	background: #0ea5e9;
 }
 
 .time-labels {
 	display: flex;
 	justify-content: space-between;
 	font-size: 11px;
-	color: #64748b;
+	color: #94a3b8;
+}
+
+/* Estilos oscuros para los globos informativos (Popups) dentro del mapa */
+.leaflet-popup-content-wrapper {
+	background: #1e293b !important;
+	color: #f1f5f9 !important;
+	border: 1px solid #334155;
+}
+
+.leaflet-popup-tip {
+	background: #1e293b !important;
+}
+
+.leaflet-popup-close-button {
+	color: #94a3b8 !important;
 }
 </style>
 </head>
@@ -185,98 +203,133 @@ body {
 
 	</div>
 
+
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 	<script>
-        const map = L.map('map').setView([-38.749181, -72.629824667], 18);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19, attribution: '© OpenStreetMap'
-        }).addTo(map);
+    // Inicializar mapa con el zoom en 18 (Cercano por defecto)
+    const map = L.map('map').setView([-38.749181, -72.629824667], 18);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap'
+    }).addTo(map);
 
-        let markersGroup = L.layerGroup().addTo(map);
-        let todosLosLogs = [];
-        let fechasUnicasOrdenadas = [];
+    let markersGroup = L.layerGroup().addTo(map);
+    let todosLosLogs = [];
+    let fechasUnicasOrdenadas = [];
 
-        function inicializarTelemetria() {
-            document.getElementById('txtStatus').innerText = "Conectando con la API...";
-            
-            fetch('/api/logGanado')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 0) {
-                        document.getElementById('txtStatus').innerText = "Sin datos en MySQL.";
-                        return;
-                    }
+    function inicializarTelemetria() {
+        document.getElementById('txtStatus').innerText = "Conectando con la API...";
+        
+        fetch('/api/logGanado')
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    document.getElementById('txtStatus').innerText = "Sin datos en MySQL.";
+                    return;
+                }
 
-                    todosLosLogs = data.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
-                    fechasUnicasOrdenadas = todosLosLogs.map(log => log.fechaCreacion);
+                todosLosLogs = data.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+                fechasUnicasOrdenadas = todosLosLogs.map(log => log.fechaCreacion);
 
-                    const slider = document.getElementById('timeSlider');
-                    slider.min = 0;
-                    slider.max = fechasUnicasOrdenadas.length - 1;
-                    slider.value = fechasUnicasOrdenadas.length - 1;
+                const slider = document.getElementById('timeSlider');
+                slider.min = 0;
+                slider.max = fechasUnicasOrdenadas.length - 1;
+                slider.value = fechasUnicasOrdenadas.length - 1;
 
-                    document.getElementById('startTimeLabel').innerText = new Date(fechasUnicasOrdenadas[0]).toLocaleString();
-                    document.getElementById('endTimeLabel').innerText = new Date(fechasUnicasOrdenadas[fechasUnicasOrdenadas.length - 1]).toLocaleString();
-                    
-                    document.getElementById('timelineUi').style.visibility = 'visible';
-                    renderizarMapaEnInstante(fechasUnicasOrdenadas.length - 1);
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    document.getElementById('txtStatus').innerText = "Error al leer servidor.";
-                });
-        }
-
-        function actualizarMapaPorSlider(index) {
-            renderizarMapaEnInstante(parseInt(index));
-        }
-
-        function renderizarMapaEnInstante(indexSlider) {
-            markersGroup.clearLayers();
-
-            const fechaCorteStr = fechasUnicasOrdenadas[indexSlider];
-            const fechaCorte = new Date(fechaCorteStr);
-
-            const esUltimo = (indexSlider === fechasUnicasOrdenadas.length - 1);
-            document.getElementById('currentTimeLabel').innerText = esUltimo 
-                ? `Actual: ${fechaCorte.toLocaleString()}`
-                : `Histórico: ${fechaCorte.toLocaleString()}`;
-
-            const logsHastaElMomento = todosLosLogs.filter(log => new Date(log.fechaCreacion) <= fechaCorte);
-            const ultimasPosicionesDispositivos = {};
-
-            logsHastaElMomento.forEach(log => {
-                ultimasPosicionesDispositivos[log.dispositivoId] = log;
+                document.getElementById('startTimeLabel').innerText = new Date(fechasUnicasOrdenadas[0]).toLocaleString();
+                document.getElementById('endTimeLabel').innerText = new Date(fechasUnicasOrdenadas[fechasUnicasOrdenadas.length - 1]).toLocaleString();
+                
+                document.getElementById('timelineUi').style.visibility = 'visible';
+                renderizarMapaEnInstante(fechasUnicasOrdenadas.length - 1);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById('txtStatus').innerText = "Error al leer servidor.";
             });
+    }
 
-            const listaDispositivos = Object.values(ultimasPosicionesDispositivos);
+    function actualizarMapaPorSlider(index) {
+        renderizarMapaEnInstante(parseInt(index));
+    }
+
+    function renderizarMapaEnInstante(indexSlider) {
+        markersGroup.clearLayers();
+
+        const fechaCorteStr = fechasUnicasOrdenadas[indexSlider];
+        const fechaCorte = new Date(fechaCorteStr);
+
+        const esUltimo = (indexSlider === fechasUnicasOrdenadas.length - 1);
+        document.getElementById('currentTimeLabel').innerText = esUltimo 
+            ? `Actual: ${fechaCorte.toLocaleString()}`
+            : `Histórico: ${fechaCorte.toLocaleString()}`;
+
+        const logsHastaElMomento = todosLosLogs.filter(log => new Date(log.fechaCreacion) <= fechaCorte);
+        const ultimasPosicionesDispositivos = {};
+
+        logsHastaElMomento.forEach(log => {
+            ultimasPosicionesDispositivos[log.dispositivoId] = log;
+        });
+
+        const listaDispositivos = Object.values(ultimasPosicionesDispositivos);
+        
+        // Re-centrar el mapa con zoom cercano en cada actualización de datos
+        if (listaDispositivos.length > 0) {
+            map.setView([listaDispositivos[0].latitud, listaDispositivos[0].longitud], 18);
+        }
+
+        listaDispositivos.forEach(log => {
+            const marker = L.marker([log.latitud, log.longitud]);
             
-            <!-- Si hay dispositivos, centra el mapa automáticamente en el primero de la lista con zoom 18 -->
-            if (listaDispositivos.length > 0) {
-                map.setView([listaDispositivos[0].latitud, listaDispositivos[0].longitud], 18);
+            // Aplicar filtros visuales a los pines para que resalten en el mapa oscuro
+            let filtroColor = "hue-rotate(140deg) brightness(1.2)"; // Verde brillante por defecto
+            if (log.dispositivoId === 101) {
+                filtroColor = "hue-rotate(320deg) saturate(3) brightness(1.2)"; // Rojo eléctrico
             }
             
-            listaDispositivos.forEach(log => {
-                const marker = L.marker([log.latitud, log.longitud]);
-                marker.bindPopup(`
-                    <b>Dispositivo ID:</b> ${log.dispositivoId}<br>
-                    <b>Temperatura:</b> ${log.temperatura} °C<br>
-                    <b>Reporte:</b> ${new Date(log.fechaCreacion).toLocaleString()}
-                `);
-                markersGroup.addLayer(marker);
+            marker.on('add', function() {
+                marker._icon.style.filter = filtroColor;
             });
 
-            document.getElementById('txtStatus').innerText = `${listaDispositivos.length} en línea`;
-            
-            let htmlLista = "<ul>";
-            listaDispositivos.forEach(d => {
-                htmlLista += `<li><b>ID: ${d.dispositivoId}</b><br>🌡️ Temp: ${d.temperatura}°C</li>`;
-            });
-            htmlLista += "</ul>";
-            document.getElementById('deviceList').innerHTML = htmlLista;
-        }
+            marker.bindPopup(`
+                <div style="font-family: Arial, sans-serif;">
+                    <b style="color: #38bdf8;">Dispositivo ID:</b> ${log.dispositivoId}<br>
+                    <b>🌡️ Temp:</b> ${log.temperatura} °C<br>
+                    <b>📅 Reporte:</b> ${new Date(log.fechaCreacion).toLocaleString()}
+                </div>
+            `);
+            markersGroup.addLayer(marker);
+        });
 
-        inicializarTelemetria();
+        document.getElementById('txtStatus').innerText = `${listaDispositivos.length} en línea`;
+        
+        let htmlLista = "<ul>";
+        listaDispositivos.forEach(d => {
+            htmlLista += `<li><b>ID: ${d.dispositivoId}</b><br>🌡️ Temp: <span style="color: #38bdf8; font-weight: bold;">${d.temperatura}°C</span></li>`;
+        });
+        htmlLista += "</ul>";
+        document.getElementById('deviceList').innerHTML = htmlLista;
+    }
+
+    // Carga inicial
+    inicializarTelemetria();
+
+    // Auto-refresh inteligente cada 10 segundos
+    setInterval(function() {
+        const slider = document.getElementById('timeSlider');
+        
+        const estabaAlFinal = (parseInt(slider.value) === fechasUnicasOrdenadas.length - 1);
+        
+        fetch('/api/logGanado').then(response => response.json()).then(data => {
+        	if (data.length === 0) return;
+        	todosLosLogs = data.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+        	fechasUnicasOrdenadas = todosLosLogs.map(log => log.fechaCreacion);
+        	slider.max = fechasUnicasOrdenadas.length - 1;
+        	document.getElementById('endTimeLabel').innerText = new Date(fechasUnicasOrdenadas[fechasUnicasOrdenadas.length - 1]).toLocaleString();
+        	if (estabaAlFinal) {
+        		slider.value = fechasUnicasOrdenadas.length - 1;
+        		renderizarMapaEnInstante(fechasUnicasOrdenadas.length - 1);
+        		}
+        	}).catch(error => console.error("Error en auto-refresh:", error));
+        }, 60000);
     </script>
 </body>
 </html>
