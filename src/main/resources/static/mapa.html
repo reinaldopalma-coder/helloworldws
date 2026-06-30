@@ -234,9 +234,9 @@ body {
                 slider.min = 0;
                 slider.max = fechasUnicasOrdenadas.length - 1;
                 slider.value = fechasUnicasOrdenadas.length - 1;
-
-                document.getElementById('startTimeLabel').innerText = new Date(fechasUnicasOrdenadas[0]).toLocaleString('es-CL', { timeZone: 'America/Santiago' });
-                document.getElementById('endTimeLabel').innerText = new Date(fechasUnicasOrdenadas[fechasUnicasOrdenadas.length - 1]).toLocaleString('es-CL', { timeZone: 'America/Santiago' });
+                
+                document.getElementById('startTimeLabel').innerText = new Date(fechasUnicasOrdenadas[0]).toLocaleString();
+                document.getElementById('endTimeLabel').innerText = new Date(fechasUnicasOrdenadas[fechasUnicasOrdenadas.length - 1]).toLocaleString();
 
                 document.getElementById('timelineUi').style.visibility = 'visible';
                 renderizarMapaEnInstante(fechasUnicasOrdenadas.length - 1);
@@ -262,8 +262,8 @@ body {
 
         const esUltimo = (indexSlider === fechasUnicasOrdenadas.length - 1);
         document.getElementById('currentTimeLabel').innerText = esUltimo 
-            ? `Actual: ${fechaCorte.toLocaleString('es-CL', opcionesFecha)}`
-            : `Histórico: ${fechaCorte.toLocaleString('es-CL', opcionesFecha)}`;
+            ? `Actual: ${fechaCorte.toLocaleString()}`
+            : `Histórico: ${fechaCorte.toLocaleString()}`;
             
         const logsHastaElMomento = todosLosLogs.filter(log => new Date(log.fechaCreacion) <= fechaCorte);
         const ultimasPosicionesDispositivos = {};
@@ -291,14 +291,15 @@ body {
             marker.on('add', function() {
                 marker._icon.style.filter = filtroColor;
             });
-
+            
             marker.bindPopup(`
             	    <div style="font-family: Arial, sans-serif;">
             	        <b style="color: #38bdf8;">Dispositivo ID:</b> ${log.dispositivoId}<br>
             	        <b>🌡️ Temp:</b> ${log.temperatura} °C<br>
-            	        <b>📅 Reporte:</b> ${new Date(log.fechaCreacion).toLocaleString('es-CL', { timeZone: 'America/Santiago' })}
+            	        <b>📅 Reporte:</b> ${new Date(log.fechaCreacion).toLocaleString()}
             	    </div>
             	`);
+
             markersGroup.addLayer(marker);
         });
 
